@@ -3,13 +3,13 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import time
-import chromedriver_autoinstaller
+import chromedriver_autoinstaller  # Tự động tải ChromeDriver
 
 app = Flask(__name__)
 
 # Cấu hình Selenium WebDriver
 def start_browser():
-    # Tự động cài đặt chromedriver phù hợp
+    # Tự động cài đặt ChromeDriver
     chromedriver_autoinstaller.install()
 
     options = webdriver.ChromeOptions()
@@ -17,9 +17,7 @@ def start_browser():
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--disable-extensions")
-    options.add_argument("--remote-debugging-port=9222")
-
+    
     driver = webdriver.Chrome(options=options)
     return driver
 
@@ -27,19 +25,19 @@ def start_browser():
 def login_to_chatgpt():
     driver = start_browser()
     driver.get("https://chat.openai.com/")  # Mở trang ChatGPT
-
+    
     # Đăng nhập tự động
     time.sleep(2)
     try:
         # Điền email
         email_box = driver.find_element(By.NAME, "username")
-        email_box.send_keys("vutruongnguyen2015@gmail.com")  # Email bạn cung cấp
+        email_box.send_keys("vutruongnguyen2015@gmail.com")  # Thay bằng email của bạn
         email_box.send_keys(Keys.RETURN)
 
         time.sleep(2)
         # Điền mật khẩu
         password_box = driver.find_element(By.NAME, "password")
-        password_box.send_keys("Mua_chatgpt_Lien_He_Zalo_0372324770")  # Mật khẩu bạn cung cấp
+        password_box.send_keys("Mua_chatgpt_Lien_He_Zalo_0372324770")  # Thay bằng mật khẩu của bạn
         password_box.send_keys(Keys.RETURN)
 
         time.sleep(5)  # Chờ đăng nhập hoàn tất
