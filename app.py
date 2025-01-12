@@ -1,9 +1,9 @@
 from flask import Flask, redirect
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager  # Quản lý ChromeDriver tự động
+from webdriver_manager.chrome import ChromeDriverManager
 import time
 
 app = Flask(__name__)
@@ -15,10 +15,10 @@ def start_browser():
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-    
-    # Sử dụng webdriver_manager để tải xuống ChromeDriver
-    service = Service(ChromeDriverManager().install())
-    driver = webdriver.Chrome(service=service, options=options)
+    options.binary_location = "/usr/bin/google-chrome"  # Đường dẫn Chrome trên môi trường Azure
+
+    # Tự động cài đặt ChromeDriver với webdriver-manager
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     return driver
 
 @app.route("/")
@@ -29,25 +29,26 @@ def login_to_chatgpt():
     # Đăng nhập tự động
     time.sleep(2)
     try:
-        # Điền email
+        # Tìm và điền email
         email_box = driver.find_element(By.NAME, "username")
         email_box.send_keys("vutruongnguyen2015@gmail.com")  # Thay bằng email của bạn
         email_box.send_keys(Keys.RETURN)
 
         time.sleep(2)
-        # Điền mật khẩu
+        # Tìm và điền mật khẩu
         password_box = driver.find_element(By.NAME, "password")
         password_box.send_keys("Mua_chatgpt_Lien_He_Zalo_0372324770")  # Thay bằng mật khẩu của bạn
         password_box.send_keys(Keys.RETURN)
 
         time.sleep(5)  # Chờ đăng nhập hoàn tất
     except Exception as e:
-        print("Error occurred:", e)
+        print(f"Lỗi xảy ra: {e}")
+    finally:
+        # Đóng trình duyệt sau khi hoàn thành
+        driver.quit()
 
-    # Lấy URL đã đăng nhập thành công
-    chat_url = driver.current_url
-    driver.quit()
-    return redirect(chat_url)
+    # Trả về thông báo thành công
+    return "Đăng nhập tự động hoàn tất!"
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8000)
+    app.run(host="0.0.0.0", port=8000)
