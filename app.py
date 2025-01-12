@@ -1,30 +1,33 @@
 from flask import Flask, redirect
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import time
-import os
+import chromedriver_autoinstaller
 
 app = Flask(__name__)
 
 # Cấu hình Selenium WebDriver
 def start_browser():
+    # Tự động cài đặt chromedriver phù hợp
+    chromedriver_autoinstaller.install()
+
     options = webdriver.ChromeOptions()
     options.add_argument("--headless")  # Chạy không giao diện
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-    options.binary_location = "/usr/bin/chromium-browser"  # Đường dẫn Chromium trên Azure
-    service = Service("/usr/local/bin/chromedriver")  # Đường dẫn ChromeDriver
-    driver = webdriver.Chrome(service=service, options=options)
+    options.add_argument("--disable-extensions")
+    options.add_argument("--remote-debugging-port=9222")
+
+    driver = webdriver.Chrome(options=options)
     return driver
 
 @app.route("/")
 def login_to_chatgpt():
     driver = start_browser()
     driver.get("https://chat.openai.com/")  # Mở trang ChatGPT
-    
+
     # Đăng nhập tự động
     time.sleep(2)
     try:
